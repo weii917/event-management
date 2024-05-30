@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Event;
+use App\Http\Resources\EventResource;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ class EventController extends Controller
      */
     public function index()
     {
-        return Event::all();
+        return EventResource::collection(Event::with('user')->get());
     }
 
     /**  
@@ -39,15 +40,17 @@ class EventController extends Controller
 
         // 使用合併後的數據創建事件
         $event = Event::create($data);
-        return $event;
+        return new EventResource($event);
     }
 
-    /**
+    /** 
      * Display the specified resource.
      */
     public function show(Event $event)
     {
-        return $event;
+        // 加載關聯數據是根據modal Event裡的function命名
+        $event->load('user', 'attendees');
+        return new EventResource($event);
     }
 
     /**
@@ -65,7 +68,7 @@ class EventController extends Controller
                 'end_time' => 'sometimes|date|after:start_time'
             ])
         );
-        return $event;
+        return new EventResource($event);
     }
 
     /**
