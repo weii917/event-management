@@ -15,6 +15,12 @@ class EventController extends Controller
     use CanLoadRelationships;
 
     private array $relations = ['user', 'attendees', 'attendees.user'];
+
+    // 加入驗證檢查排除index ,show
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -45,10 +51,11 @@ class EventController extends Controller
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time'
         ]);
-
+        // dd($request);
         // 合併驗證數據和其他數據
+        // 當驗證後會request包含當前認證用戶的資料，就可以使用user() 方法來獲取用戶實例並訪問其屬性
         $data = array_merge($validatedData, [
-            'user_id' => 1,
+            'user_id' => $request->user()->id,
         ]);
 
         // 使用合併後的數據創建事件
