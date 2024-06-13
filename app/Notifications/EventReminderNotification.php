@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notification;
 
 use App\Models\Event;
 
-class EventReminderNotification extends Notification
+class EventReminderNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
