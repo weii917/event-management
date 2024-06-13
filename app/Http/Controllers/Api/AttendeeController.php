@@ -21,6 +21,8 @@ class AttendeeController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum')->except(['index', 'show', 'update']);
+
+        $this->authorizeResource(Attendee::class, 'attendee');
     }
     /**
      * Display a listing of the resource.
@@ -72,7 +74,7 @@ class AttendeeController extends Controller
         // if (Gate::denies('delete-attendee', [$event, $attendee])) {
         //     abort(403, 'You are not authroized to update this event.');
         // }
-        $this->authorize('delete-attendee', [$event, $attendee]);
+        // $this->authorize('delete-attendee', [$event, $attendee]);
         $attendee->delete();
         return response(status: 204);
     }
