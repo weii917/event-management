@@ -10,10 +10,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\AttendeeResource;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Gate;
+
+
 class AttendeeController extends Controller
 {
     use CanLoadRelationships;
     private array $relations = ['user'];
+    // 加入驗證檢查
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show', 'update']);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -59,8 +67,12 @@ class AttendeeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $event, Attendee $attendee)
+    public function destroy(Event $event, Attendee $attendee)
     {
+        // if (Gate::denies('delete-attendee', [$event, $attendee])) {
+        //     abort(403, 'You are not authroized to update this event.');
+        // }
+        $this->authorize('delete-attendee', [$event, $attendee]);
         $attendee->delete();
         return response(status: 204);
     }
